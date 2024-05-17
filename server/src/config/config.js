@@ -19,7 +19,6 @@ const mongodbConfig = {
 
 const roomConfig = {
     maxRoomsPerUser: 5,
-    maxUsersInRoom: 3
 }
 
 const messageConfig = {
