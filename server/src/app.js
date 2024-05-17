@@ -8,8 +8,7 @@ import config from "./config/config.js";
 import ConnectionHandler from "./transport/ws/handler.js";
 import wsMiddleware from "./transport/ws/middleware.js";
 import mongoose from 'mongoose';
-import {ApiError} from "./domain/errors.js";
-import usecase from "./usecase/auth.js";
+import roomUsecase from "./usecase/room.js"
 
 const app = new express();
 app.use(express.json());
@@ -36,6 +35,8 @@ const io = new Server(server, {
 });
 
 io.use(wsMiddleware.authenticate);
+
+roomUsecase.withWsConn(io)
 
 const connHandler = new ConnectionHandler(io)
 connHandler.ServeWs()

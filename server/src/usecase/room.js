@@ -3,8 +3,17 @@ import userModel from '../models/user.js';
 import {ApiError} from '../domain/errors.js';
 import {v4 as uuidv4} from 'uuid';
 import config from "../config/config.js";
+import events from "../domain/events.js";
 
 class RoomUseCase {
+    constructor() {
+        this.io = null
+    }
+
+    withWsConn(io) {
+        this.io = io
+    }
+
     async getRooms(ownerId) {
         const rooms = await roomModel.find({ownerId}).populate('blackList').exec();
         return rooms.map(v => {
@@ -64,7 +73,15 @@ class RoomUseCase {
         if (!deletedRoom) {
             throw ApiError.notFound(`Конференция ${linkId} не найдена`);
         }
-        /* TODO: call hub's method to delete active room */
+
+        if (this.io) {
+            const clients = Array.from(this.io.sockets.adapter.rooms.get(linkId) || [])
+            clients.forEach(clientId => {
+                this.io.to(clientId).emit(events.FORCE_DISCONNECT, {
+                    reason: "Данная конференция была удалена ее владельцем",
+                })
+            })
+        }
     }
 }
 
