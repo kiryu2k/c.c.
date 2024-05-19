@@ -10,7 +10,6 @@ const HubUseCase = () => {
         return async ({roomId}) => {
             const userId = socket.data.userId
             const user = socket.data.username
-            console.log(`user ${user} is gonna join the room ${roomId}`);
 
             let room = null
             try {
@@ -199,9 +198,9 @@ const HubUseCase = () => {
                     client.emit(events.FORCE_DISCONNECT, {
                         reason: "Организатор добавил вас в черный список данной конференции",
                     })
-                    socket.leave(roomId)
-                    connectedUsers.delete(user)
-                    socket.disconnect(true);
+                    client.leave(roomId)
+                    connectedUsers.delete(name)
+                    client.disconnect(true);
                 } else {
                     client.emit(events.REMOVE_PEER, {name})
                 }

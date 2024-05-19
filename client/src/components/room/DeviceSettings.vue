@@ -1,6 +1,6 @@
 <script setup>
-import {useRoute} from 'vue-router';
-import {onBeforeUnmount, onMounted, ref, watch} from 'vue';
+import {useRoute, useRouter} from 'vue-router';
+import {onMounted, ref, watch} from 'vue';
 import {useClientStore} from '../../stores/client';
 import {storeToRefs} from "pinia";
 import {useDeviceStore} from "../../stores/device.js";
@@ -14,6 +14,8 @@ const {joinRoom} = clientStore
 
 const {params} = useRoute();
 
+const router = useRouter();
+
 const buttonTexts = ['Прослушать себя', 'Прекратить слушать'];
 const micVolume = ref(0);
 const muteBtnText = ref('Прослушать себя');
@@ -23,13 +25,11 @@ const switchMicroVolume = () => {
   muteBtnText.value = buttonTexts[micVolume.value];
 };
 
-watch(selectedCamera, async (v) => {
-  console.log(`selected camera: ${v}`);
+watch(selectedCamera, async () => {
   await clientStore.captureLocalVideo(selectedMicro.value, selectedCamera.value)
 });
 
-watch(selectedMicro, async (v) => {
-  console.log(`selected micro: ${v}`);
+watch(selectedMicro, async () => {
   await clientStore.captureLocalVideo(selectedMicro.value, selectedCamera.value)
 });
 
@@ -37,17 +37,14 @@ onMounted(() => {
   clientStore.captureLocalVideo(null, null).then(deviceStore.listenDeviceUpdates)
 });
 
-onBeforeUnmount(() => {
-  if (isConnected.value) {
-    return
-  }
-  console.log('before unmount');
-
-  if (stream.value) {
-    stream.value.getTracks().forEach(v => v.stop())
-  }
-  stream.value = null
-});
+const cancel = () => {
+  router.push("/").then(() => {
+    if (stream.value) {
+      stream.value.getTracks().forEach(v => v.stop())
+    }
+    stream.value = null
+  })
+}
 </script>
 
 <template>
@@ -81,6 +78,7 @@ onBeforeUnmount(() => {
               type="button"
               class="btn btn-primary"
               v-on:click="joinRoom(params.id)"
+              :disabled="!isConnected"
           >
             Подключиться
           </button>
@@ -91,7 +89,9 @@ onBeforeUnmount(() => {
           >
             {{ muteBtnText }}
           </button>
-          <RouterLink to="/" type="button" class="btn btn-light">Отмена</RouterLink>
+          <button type="button" class="btn btn-light" v-on:click="cancel">
+            Отмена
+          </button>
         </div>
       </div>
     </div>

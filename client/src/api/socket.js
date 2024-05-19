@@ -16,8 +16,7 @@ const options = {
 
 export const socket = io(config.serverUrl, options);
 
-export const connectToWsServer = (token) => {
-  console.log('connect to ws server');
+export const  connectToWsServer = (token) => {
   socket.auth.token = token
   socket.off();
   socket.connect();

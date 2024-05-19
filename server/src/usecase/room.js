@@ -64,7 +64,7 @@ class RoomUseCase {
         }
 
         return {
-            roomId: room.linkId, blackList: blackList,
+            roomId: room.linkId, blackList: blackListByName,
         }
     }
 

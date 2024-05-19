@@ -67,7 +67,6 @@ export const useClientStore = defineStore('client', () => {
 
         socket.on(events.FORCE_DISCONNECT, ({reason}) => {
             clear()
-            console.log(reason)
             errMessage.value = reason
         })
 
@@ -152,13 +151,8 @@ export const useClientStore = defineStore('client', () => {
                 trackCounter = 0
 
                 const [remoteStream] = e.streams
-                console.log(remoteStream.getTracks())
                 remoteStreams.value.set(name, remoteStream)
             }
-        }
-
-        peer.onconnectionstatechange = (e) => {
-            console.log(`peer's ${name} connection state is changed to ${peer.connectionState}`)
         }
 
         if (withOffer) {
@@ -182,8 +176,6 @@ export const useClientStore = defineStore('client', () => {
     }
 
     const handleSdp = async ({name, sdp}) => {
-        console.log(`gonna set remote description for ${name}`)
-        console.log(sdp)
         const desc = new RTCSessionDescription(sdp)
         if (desc.type !== 'offer' && desc.type !== 'answer') {
             console.info(`unsupported sdp type ${desc.type}`)
@@ -304,7 +296,7 @@ export const useClientStore = defineStore('client', () => {
 
         isRoomOwner.value = false
         isConnected.value = false
-        shouldCheckDevices.value = true
+        // shouldCheckDevices.value = true
 
         socket.off()
     }

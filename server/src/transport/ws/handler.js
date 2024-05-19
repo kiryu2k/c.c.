@@ -9,9 +9,6 @@ class ConnectionHandler {
 
     ServeWs() {
         this.io.on(events.CONNECTION, (socket) => {
-            const userId = socket.data.userId;
-            console.log(`user ${userId} connected`);
-
             socket.on(events.JOIN_ROOM, usecase.joinRoom(socket, this.io));
 
             socket.on(events.LEAVE_ROOM, usecase.leaveRoom(socket, this.io));

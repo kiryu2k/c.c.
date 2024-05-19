@@ -1,10 +1,11 @@
 <script setup>
 import {storeToRefs} from 'pinia'
 import {useClientStore} from '../../stores/client.js'
-import {computed, onBeforeUnmount, ref} from "vue"
+import {computed, onUnmounted, ref} from "vue"
 import {useRouter} from "vue-router";
 import DeviceSettings from "./DeviceSettings.vue";
 import Chat from "./Chat.vue"
+import {socket} from "../../api/socket.js";
 
 const router = useRouter();
 
@@ -49,7 +50,11 @@ const toggleVideoOrUndo = () => {
 
 const leaveRoom = () => {
   clientStore.leaveRoom()
-  router.push(`/`);
+  router.push(`/`).then(()=>{
+    clientStore.clear()
+    errMessage.value = null
+    shouldCheckDevices.value = true
+  });
 }
 
 const makeVideoPairs = computed(() => {
@@ -61,9 +66,8 @@ const makeVideoPairs = computed(() => {
   return allStreams.flatMap((_, i, arr) => i % 2 ? [] : [arr.slice(i, i + 2)]);
 })
 
-onBeforeUnmount(() => {
-  clientStore.clear()
-  errMessage.value = null
+onUnmounted(() => {
+  socket.off()
 })
 </script>
 
