@@ -1,7 +1,7 @@
 const serverConfig = {
     port: '8080',
     origin: [
-        'http://localhost:5173',
+        'http://localhost:8080',
     ],
 }
 
@@ -11,7 +11,7 @@ const jwtConfig = {
 }
 
 const mongodbConfig = {
-    host: "localhost",
+    host: "mongo",
     username: "kira",
     password: "qwerty",
     port: "27017"
